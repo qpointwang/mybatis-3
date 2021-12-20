@@ -13,13 +13,15 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.cache.decorators;
 
 import java.util.concurrent.TimeUnit;
-
 import org.apache.ibatis.cache.Cache;
 
 /**
+ * 定时清理缓存功能，清除超时的缓存记录
+ *
  * @author Clinton Begin
  */
 public class ScheduledCache implements Cache {

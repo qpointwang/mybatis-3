@@ -13,18 +13,19 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.cache.decorators;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
+ * 二级缓存
  * The 2nd level cache transactional buffer.
  * <p>
  * This class holds all cache entries that are to be added to the 2nd level cache during a Session.
@@ -40,9 +41,12 @@ public class TransactionalCache implements Cache {
   private static final Log log = LogFactory.getLog(TransactionalCache.class);
 
   private final Cache delegate;
-  private boolean clearOnCommit;
   private final Map<Object, Object> entriesToAddOnCommit;
+  /**
+   * 缓存中丢失的实体
+   */
   private final Set<Object> entriesMissedInCache;
+  private boolean clearOnCommit;
 
   public TransactionalCache(Cache delegate) {
     this.delegate = delegate;
@@ -78,6 +82,7 @@ public class TransactionalCache implements Cache {
 
   @Override
   public void putObject(Object key, Object object) {
+    // put并不会直接写入缓存，而是在commit的时候才会真正写入缓存
     entriesToAddOnCommit.put(key, object);
   }
 
@@ -88,12 +93,15 @@ public class TransactionalCache implements Cache {
 
   @Override
   public void clear() {
+    // 把entriesToAddOnCommit清除即可
     clearOnCommit = true;
     entriesToAddOnCommit.clear();
   }
 
   public void commit() {
+    // 在commit时清除
     if (clearOnCommit) {
+      // 先清除缓存
       delegate.clear();
     }
     flushPendingEntries();
@@ -111,8 +119,12 @@ public class TransactionalCache implements Cache {
     entriesMissedInCache.clear();
   }
 
+  /**
+   * 将待办的实体写入缓存
+   */
   private void flushPendingEntries() {
     for (Map.Entry<Object, Object> entry : entriesToAddOnCommit.entrySet()) {
+      // 写入缓存
       delegate.putObject(entry.getKey(), entry.getValue());
     }
     for (Object entry : entriesMissedInCache) {
@@ -128,7 +140,7 @@ public class TransactionalCache implements Cache {
         delegate.removeObject(entry);
       } catch (Exception e) {
         log.warn("Unexpected exception while notifying a rollback to the cache adapter. "
-            + "Consider upgrading your cache adapter to the latest version. Cause: " + e);
+          + "Consider upgrading your cache adapter to the latest version. Cause: " + e);
       }
     }
   }

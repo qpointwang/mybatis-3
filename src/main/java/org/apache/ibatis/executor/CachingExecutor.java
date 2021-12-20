@@ -13,11 +13,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.executor;
 
 import java.sql.SQLException;
 import java.util.List;
-
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.cache.TransactionalCacheManager;
@@ -33,6 +33,8 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
+ * 二级缓存
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
@@ -83,17 +85,21 @@ public class CachingExecutor implements Executor {
   }
 
   @Override
-  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler)
+    throws SQLException {
     BoundSql boundSql = ms.getBoundSql(parameterObject);
     CacheKey key = createCacheKey(ms, parameterObject, rowBounds, boundSql);
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 
   @Override
-  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
-      throws SQLException {
+  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler,
+    CacheKey key, BoundSql boundSql)
+    throws SQLException {
+    // 经过一系列装饰器装饰的cache
     Cache cache = ms.getCache();
     if (cache != null) {
+      // 是否需要刷新缓存
       flushCacheIfRequired(ms);
       if (ms.isUseCache() && resultHandler == null) {
         ensureNoOutParams(ms, boundSql);
@@ -101,6 +107,7 @@ public class CachingExecutor implements Executor {
         List<E> list = (List<E>) tcm.getObject(cache, key);
         if (list == null) {
           list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+          // 这里没有直接操作cache，只是在把这次的数据和key放入待提交的Map中。
           tcm.putObject(cache, key, list); // issue #578 and #116
         }
         return list;
@@ -116,7 +123,9 @@ public class CachingExecutor implements Executor {
 
   @Override
   public void commit(boolean required) throws SQLException {
+    // 提交事务
     delegate.commit(required);
+    // 更新缓存
     tcm.commit();
   }
 
@@ -135,7 +144,9 @@ public class CachingExecutor implements Executor {
     if (ms.getStatementType() == StatementType.CALLABLE) {
       for (ParameterMapping parameterMapping : boundSql.getParameterMappings()) {
         if (parameterMapping.getMode() != ParameterMode.IN) {
-          throw new ExecutorException("Caching stored procedures with OUT params is not supported.  Please configure useCache=false in " + ms.getId() + " statement.");
+          throw new ExecutorException(
+            "Caching stored procedures with OUT params is not supported.  Please configure useCache=false in " + ms
+              .getId() + " statement.");
         }
       }
     }
@@ -152,7 +163,8 @@ public class CachingExecutor implements Executor {
   }
 
   @Override
-  public void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType) {
+  public void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key,
+    Class<?> targetType) {
     delegate.deferLoad(ms, resultObject, property, key, targetType);
   }
 
@@ -161,6 +173,11 @@ public class CachingExecutor implements Executor {
     delegate.clearLocalCache();
   }
 
+  /**
+   * 更新时清除缓存
+   *
+   * @param ms
+   */
   private void flushCacheIfRequired(MappedStatement ms) {
     Cache cache = ms.getCache();
     if (cache != null && ms.isFlushCacheRequired()) {

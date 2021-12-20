@@ -13,11 +13,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.session;
 
 /**
  * @author Eduardo Macarron
  */
 public enum LocalCacheScope {
-  SESSION,STATEMENT
+  SESSION, STATEMENT
+  // 一级缓存级别
 }

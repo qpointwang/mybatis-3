@@ -13,21 +13,19 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.cache;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-
 import org.apache.ibatis.reflection.ArrayUtil;
 
 /**
  * @author Clinton Begin
  */
 public class CacheKey implements Cloneable, Serializable {
-
-  private static final long serialVersionUID = 1146682552656046210L;
 
   public static final CacheKey NULL_CACHE_KEY = new CacheKey() {
 
@@ -41,7 +39,7 @@ public class CacheKey implements Cloneable, Serializable {
       throw new CacheException("Not allowed to update a null cache key instance.");
     }
   };
-
+  private static final long serialVersionUID = 1146682552656046210L;
   private static final int DEFAULT_MULTIPLIER = 37;
   private static final int DEFAULT_HASHCODE = 17;
 
@@ -87,6 +85,12 @@ public class CacheKey implements Cloneable, Serializable {
     }
   }
 
+  /**
+   * 重写equals方法
+   *
+   * @param object 要对比的对象
+   * @return 是否相等
+   */
   @Override
   public boolean equals(Object object) {
     if (this == object) {

@@ -13,11 +13,14 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.cache.decorators;
 
 import org.apache.ibatis.cache.Cache;
 
 /**
+ * 同步cache装饰器直接使用synchronized修饰方法
+ *
  * @author Clinton Begin
  */
 public class SynchronizedCache implements Cache {

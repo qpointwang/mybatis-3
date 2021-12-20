@@ -13,11 +13,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.cache;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.ibatis.cache.decorators.TransactionalCache;
 import org.apache.ibatis.util.MapUtil;
 
@@ -26,6 +26,7 @@ import org.apache.ibatis.util.MapUtil;
  */
 public class TransactionalCacheManager {
 
+  // Map保存了Cache和用TransactionalCache包装后的Cache的映射关系。
   private final Map<Cache, TransactionalCache> transactionalCaches = new HashMap<>();
 
   public void clear(Cache cache) {

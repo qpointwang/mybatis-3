@@ -13,6 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.cache.decorators;
 
 import org.apache.ibatis.cache.Cache;
@@ -20,6 +21,8 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
+ * 日志功能，装饰类，用于记录缓存的命中率，如果开启了DEBUG模式，则会输出命中率日志。
+ *
  * @author Clinton Begin
  */
 public class LoggingCache implements Cache {

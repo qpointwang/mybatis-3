@@ -13,6 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.mapping;
 
 /**
@@ -20,4 +21,8 @@ package org.apache.ibatis.mapping;
  */
 public enum StatementType {
   STATEMENT, PREPARED, CALLABLE
+
+  // STATEMENT 直接操作sql，不进行预编译，获取数据
+  // PREPARED 进行预编译， 默认
+  // CALLABLE 执行存储过程
 }

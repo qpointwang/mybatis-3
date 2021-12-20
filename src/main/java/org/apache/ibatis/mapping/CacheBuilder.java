@@ -13,6 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.mapping;
 
 import java.lang.reflect.Constructor;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.apache.ibatis.builder.InitializingObject;
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
@@ -38,9 +38,10 @@ import org.apache.ibatis.reflection.SystemMetaObject;
  * @author Clinton Begin
  */
 public class CacheBuilder {
+
   private final String id;
-  private Class<? extends Cache> implementation;
   private final List<Class<? extends Cache>> decorators;
+  private Class<? extends Cache> implementation;
   private Integer size;
   private Long clearInterval;
   private boolean readWrite;
@@ -91,6 +92,7 @@ public class CacheBuilder {
 
   public Cache build() {
     setDefaultImplementations();
+    // 生成cache对象，默认PerpetualCache
     Cache cache = newBaseCacheInstance(implementation, id);
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches
@@ -108,7 +110,9 @@ public class CacheBuilder {
 
   private void setDefaultImplementations() {
     if (implementation == null) {
+      // cache的实现类
       implementation = PerpetualCache.class;
+      // 默认增加LruCache修饰器
       if (decorators.isEmpty()) {
         decorators.add(LruCache.class);
       }
@@ -150,25 +154,25 @@ public class CacheBuilder {
           if (String.class == type) {
             metaCache.setValue(name, value);
           } else if (int.class == type
-              || Integer.class == type) {
+            || Integer.class == type) {
             metaCache.setValue(name, Integer.valueOf(value));
           } else if (long.class == type
-              || Long.class == type) {
+            || Long.class == type) {
             metaCache.setValue(name, Long.valueOf(value));
           } else if (short.class == type
-              || Short.class == type) {
+            || Short.class == type) {
             metaCache.setValue(name, Short.valueOf(value));
           } else if (byte.class == type
-              || Byte.class == type) {
+            || Byte.class == type) {
             metaCache.setValue(name, Byte.valueOf(value));
           } else if (float.class == type
-              || Float.class == type) {
+            || Float.class == type) {
             metaCache.setValue(name, Float.valueOf(value));
           } else if (boolean.class == type
-              || Boolean.class == type) {
+            || Boolean.class == type) {
             metaCache.setValue(name, Boolean.valueOf(value));
           } else if (double.class == type
-              || Double.class == type) {
+            || Double.class == type) {
             metaCache.setValue(name, Double.valueOf(value));
           } else {
             throw new CacheException("Unsupported property type for cache: '" + name + "' of type " + type);

@@ -13,14 +13,15 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.cache.decorators;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import org.apache.ibatis.cache.Cache;
 
 /**
+ * 采用了Lru算法的Cache实现，移除最近最少使用的Key/Value。
  * Lru (least recently used) cache decorator.
  *
  * @author Clinton Begin

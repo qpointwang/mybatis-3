@@ -13,6 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package org.apache.ibatis.session.defaults;
 
 import java.io.IOException;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.exceptions.ExceptionFactory;
@@ -77,7 +77,8 @@ public class DefaultSqlSession implements SqlSession {
     if (list.size() == 1) {
       return list.get(0);
     } else if (list.size() > 1) {
-      throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
+      throw new TooManyResultsException(
+        "Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
     } else {
       return null;
     }
@@ -97,7 +98,7 @@ public class DefaultSqlSession implements SqlSession {
   public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
     final List<? extends V> list = selectList(statement, parameter, rowBounds);
     final DefaultMapResultHandler<K, V> mapResultHandler = new DefaultMapResultHandler<>(mapKey,
-            configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
+      configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
     final DefaultResultContext<V> context = new DefaultResultContext<>();
     for (V o : list) {
       context.nextResultObject(o);
@@ -214,6 +215,7 @@ public class DefaultSqlSession implements SqlSession {
     commit(false);
   }
 
+  //
   @Override
   public void commit(boolean force) {
     try {
